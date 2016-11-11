@@ -1,15 +1,20 @@
 (function (S) {
 
-    function Turntable(id, radius, counts, data) {
+    function Turntable(id, radius, data, sectionCounts) {
         if (!id) {
             throw new Error('you must specify the id');
         }
 
         this.svg = S(id);
         this.radius = radius || 50;
-        this.counts = counts || 4;
-        this.data = data || null;
+
+        this.sectionCounts = sectionCounts || 4;
+        this.dataLen = data.length;
+        this.data = data;
+
         this.rotateDegree = 0;
+        this.counts = this.dataLen * this.sectionCounts;
+
         this.init();
     }
 
@@ -93,7 +98,21 @@
         });
     }
 
+    var data = [
+        {
+            text: 'demo1',
+            url: '#1'
+        },
+        {
+            text: 'demo2',
+            url: '#2'
+        },
+        {
+            text: 'demo3',
+            url: '#3'
+        }
+    ];
 
-    new Turntable('#turnplate', 150, 12);
+    new Turntable('#turnplate', 150, data);
 
 }(Snap));
