@@ -1,0 +1,41 @@
+{
+  "name": "snap-turnplate",
+  "version": "1.0.0",
+  "description": "A turnplate plugin by Snap.svg",
+  "main": "./dist/snap-turnplate.min.js",
+  "scripts": {
+    "start": "npm run dev && npm run prod",
+    "dev": "rollup -c rollup.config.js",
+    "prod": "rollup -c rollup.config.js --environment build:production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/youngluo/snap-turnplate.git"
+  },
+  "keywords": [
+    "snap",
+    "turnplate"
+  ],
+  "author": "Young Luo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/youngluo/snap-turnplate/issues"
+  },
+  "homepage": "https://github.com/youngluo/snap-turnplate#readme",
+  "devDependencies": {
+    "babel-preset-latest": "^6.24.1",
+    "cssnano": "^3.10.0",
+    "rollup": "^0.43.0",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-conditional": "^1.1.1",
+    "rollup-plugin-license": "^0.4.0",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-postcss": "^0.5.3",
+    "rollup-plugin-uglify": "^2.0.1",
+    "snapsvg": "^0.5.1"
+  },
+  "dependencies": {
+    "lodash.assign": "^4.2.0"
+  }
+}
