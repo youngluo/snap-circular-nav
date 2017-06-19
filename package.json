@@ -6,7 +6,8 @@
   "scripts": {
     "start": "npm run dev && npm run prod",
     "dev": "rollup -c rollup.config.js",
-    "prod": "rollup -c rollup.config.js --environment build:production"
+    "prod": "rollup -c rollup.config.js --environment build:production",
+    "watch": "rollup -c -w rollup.config.js"
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,7 @@
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-postcss": "^0.5.3",
     "rollup-plugin-uglify": "^2.0.1",
+    "rollup-watch": "^4.0.0",
     "snapsvg": "^0.5.1"
   },
   "dependencies": {

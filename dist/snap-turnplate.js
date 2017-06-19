@@ -1,181 +1,220 @@
 /**
  * A turnplate plugin by Snap.svg.
- *
+ * 
  * Bundle of snap-turnplate
- * Date: 2017-06-18
+ * Date: 2017-06-19
  * Version: 1.0.0
  * Author: Young Luo
- *
+ * 
  * Copyright © 2017 Young Luo.
  */
 
 (function () {
-    'use strict';
+'use strict';
 
-    function __$styleInject(css, returnValue) {
-        if (typeof document === 'undefined') {
-            return returnValue;
+function __$styleInject(css, returnValue) {
+  if (typeof document === 'undefined') {
+    return returnValue;
+  }
+  css = css || '';
+  var head = document.head || document.getElementsByTagName('head')[0];
+  var style = document.createElement('style');
+  style.type = 'text/css';
+  if (style.styleSheet){
+    style.styleSheet.cssText = css;
+  } else {
+    style.appendChild(document.createTextNode(css));
+  }
+  head.appendChild(style);
+  return returnValue;
+}
+
+__$styleInject(".turnplate{padding:3px}.turnplate path{cursor:pointer}.turnplate .active{fill:#28aec9}", undefined);
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _arguments = arguments;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+if (typeof Object.assign !== 'function') {
+    Object.assign = function (target) {
+        if (target === null) {
+            throw new TypeError('Cannot convert undefined or null to object');
         }
-        css = css || '';
-        var head = document.head || document.getElementsByTagName('head')[0];
-        var style = document.createElement('style');
-        style.type = 'text/css';
-        if (style.styleSheet) {
-            style.styleSheet.cssText = css;
-        } else {
-            style.appendChild(document.createTextNode(css));
-        }
-        head.appendChild(style);
-        return returnValue;
-    }
 
-    var _arguments = arguments;
-    function Turntable(id, radius, data, sectionCounts) {
-        if (!id) {
-            throw new Error('you must specify the id');
-        }
-
-        this.svg = S(id);
-        this.radius = radius || 50;
-
-        this.sectionCounts = sectionCounts || 4;
-        this.dataLen = data.length;
-        this.data = data;
-
-        this.rotateDegree = 0;
-        this.counts = this.dataLen * this.sectionCounts;
-
-        this.init();
-    }
-
-    var turntableFn = Turntable.prototype;
-
-    turntableFn.init = function () {
-        this._drawOuterCircle();
-        this._drawSectors();
-        this._drawInnerCircle();
-    };
-
-    turntableFn._drawSectors = function () {
-        var self = this,
-            startAngle = 0,
-            endAngle = 360,
-            rad = Math.PI / 180,
-            shadow = self.svg.filter(S.filter.shadow(5, 0, 0)),
-            g = self.svg.g().attr({
-                id: 'sectors-g'
-            });
-
-        self.gap = (endAngle - startAngle) / self.counts;
-
-        for (var index = 0; index < self.counts; index++) {
-            var x1 = self.radius * (1 + Math.cos(-startAngle * rad)),
-                x2 = self.radius * (1 + Math.cos(-(startAngle + self.gap) * rad)),
-                y1 = self.radius * (1 + Math.sin(-startAngle * rad)),
-                y2 = self.radius * (1 + Math.sin(-(startAngle + self.gap) * rad));
-
-            var path = self.svg.path(["M", self.radius, self.radius, "L", x1, y1, "A", self.radius, self.radius, 0, 0, 0, x2, y2, "z"].join(' ')).attr({
-                fill: "#1E1E1E",
-                stroke: '#000',
-                strokeWidth: 1
-            }).data('index', index).click(self._clickFn.bind(self));
-
-            g.add(path);
-
-            startAngle += self.gap;
-        }
-    };
-
-    turntableFn._clickFn = function (e) {
-        var self = this,
-            curPath = S(e.target),
-            index = curPath.data('index');
-
-        self.rotateDegree += index * self.gap;
-
-        self.svg.select('#sectors-g').animate({
-            transform: 'rotate(' + self.rotateDegree + ', ' + self.radius + ' ' + self.radius + ')'
-        }, 500, mina.easeinout).selectAll('path').forEach(function (path) {
-            var pathIndex = path.data('index') - index;
-
-            if (pathIndex < 0) {
-                pathIndex += self.counts;
-            }
-
-            path.data('index', pathIndex);
-
-            path.removeClass('active');
-        });
-
-        curPath.addClass('active');
-    };
-
-    turntableFn._drawInnerCircle = function () {
-        this.svg.circle(this.radius, this.radius, 80).attr({
-            fill: "#343434"
-        });
-    };
-
-    turntableFn._drawOuterCircle = function () {
-        this.svg.circle(this.radius, this.radius, this.radius + 5).attr({
-            fill: "#528387"
-        });
-    };
-
-    var data = [{
-        text: 'demo1',
-        url: '#1'
-    }, {
-        text: 'demo2',
-        url: '#2'
-    }, {
-        text: 'demo3',
-        url: '#3'
-    }];
-
-    new Turntable('#turnplate', 150, data);
-
-    if (typeof Object.assign !== 'function') {
-        Object.assign = target => {
-            if (target === null) {
-                throw new TypeError('Cannot convert undefined or null to object');
-            }
-
-            target = Object(target);
-            for (let index = 1; index < _arguments.length; index++) {
-                const source = _arguments[index];
-                if (source !== null) {
-                    for (let key in source) {
-                        if (Object.prototype.hasOwnProperty.call(source, key)) {
-                            target[key] = source[key];
-                        }
+        target = Object(target);
+        for (var index = 1; index < _arguments.length; index++) {
+            var source = _arguments[index];
+            if (source !== null) {
+                for (var key in source) {
+                    if (Object.prototype.hasOwnProperty.call(source, key)) {
+                        target[key] = source[key];
                     }
                 }
             }
-            return target;
-        };
-    }
+        }
+        return target;
+    };
+}
 
-    Snap.plugin((Snap, Element, Paper, glob, Fragment) => {
-        class Turnplate {
-            constructor(options) {
-                const defaultOptions = {
-                    id: '',
-                    radius: 50,
-                    section: 1
-                };
-                this.options = Object.assign({}, defaultOptions, options);
+Snap.plugin(function (Snap, Element, Paper, glob, Fragment) {
+    var Turnplate = function () {
+        function Turnplate(options) {
+            _classCallCheck(this, Turnplate);
 
-                return this;
-            }
+            var defaultOptions = {
+                wrapperDom: '',
+                outerRadius: 150,
+                innerRadius: 0,
+                outerBackgroundColor: '#528387',
+                innerBackgroundColor: '#848888',
+                sectorsBackgroundColor: '#ccc',
+                sectorsBorderColor: '#000',
+                sectorsBorderWidth: 1,
+                section: 1
+            };
+
+            this.options = Object.assign({}, defaultOptions, options);
+            this._init();
+
+            return this;
         }
 
-        Snap.turnplate = options => {
-            if (!options.id) {
-                throw new Error('must specify id');
+        _createClass(Turnplate, [{
+            key: '_init',
+            value: function _init() {
+                var _options = this.options,
+                    data = _options.data,
+                    section = _options.section,
+                    outerRadius = _options.outerRadius,
+                    wrapperDom = _options.wrapperDom;
+
+                this.svg = Snap(outerRadius * 2, outerRadius * 2).attr({ class: 'turnplate' });
+                if (wrapperDom) {
+                    var svg = this.svg.node;
+                    svg.parentNode.removeChild(svg);
+                    document.querySelector(wrapperDom).appendChild(svg);
+                }
+                this.rotateDegree = 0;
+                this.counts = data.length * section;
+
+                this._drawOuterCircle();
+                this._drawSectors();
+                this._drawInnerCircle();
             }
-            return new Turnplate(options);
-        };
-    });
+        }, {
+            key: '_drawOuterCircle',
+            value: function _drawOuterCircle() {
+                var _options2 = this.options,
+                    outerRadius = _options2.outerRadius,
+                    outerBackgroundColor = _options2.outerBackgroundColor;
+
+                this.svg.circle(outerRadius, outerRadius, outerRadius).attr({
+                    fill: outerBackgroundColor
+                });
+            }
+        }, {
+            key: '_drawInnerCircle',
+            value: function _drawInnerCircle() {
+                var _options3 = this.options,
+                    outerRadius = _options3.outerRadius,
+                    innerRadius = _options3.innerRadius,
+                    innerBackgroundColor = _options3.innerBackgroundColor;
+
+                if (!innerRadius) return;
+                this.svg.circle(outerRadius, outerRadius, innerRadius).attr({
+                    fill: innerBackgroundColor
+                });
+            }
+        }, {
+            key: '_drawSectors',
+            value: function _drawSectors() {
+                var startAngle = 0;
+
+                var endAngle = 360,
+                    rad = Math.PI / 180,
+                    _options4 = this.options,
+                    outerRadius = _options4.outerRadius,
+                    sectorsBackgroundColor = _options4.sectorsBackgroundColor,
+                    sectorsBorderColor = _options4.sectorsBorderColor,
+                    sectorsBorderWidth = _options4.sectorsBorderWidth,
+                    data = _options4.data,
+                    g = this.svg.g().attr({
+                    class: 'turnplate-g'
+                });
+
+
+                this.gap = (endAngle - startAngle) / this.counts; // each of angle
+
+                for (var index = 0; index < this.counts; index++) {
+                    var x1 = outerRadius * (1 + Math.cos(-startAngle * rad)),
+                        x2 = outerRadius * (1 + Math.cos(-(startAngle + this.gap) * rad)),
+                        y1 = outerRadius * (1 + Math.sin(-startAngle * rad)),
+                        y2 = outerRadius * (1 + Math.sin(-(startAngle + this.gap) * rad));
+
+                    var path = this.svg.path(["M", outerRadius, outerRadius, "L", x1, y1, "A", outerRadius, outerRadius, 0, 0, 0, x2, y2, "z"].join(' ')).attr({
+                        fill: sectorsBackgroundColor,
+                        stroke: sectorsBorderColor,
+                        strokeWidth: sectorsBorderWidth
+                    }).data('index', index).click(this._clickFn.bind(this));
+
+                    this._setText(path, data[index].text);
+
+                    g.add(path);
+                    startAngle += this.gap;
+                }
+            }
+        }, {
+            key: '_setText',
+            value: function _setText(path, text) {
+                var _path$getBBox = path.getBBox(),
+                    x = _path$getBBox.x,
+                    x2 = _path$getBBox.x2,
+                    y = _path$getBBox.y,
+                    y2 = _path$getBBox.y2;
+
+                var textX = x + (x2 - x) / 2;
+                var textY = y + (y2 - y) / 2;
+                var span = document.createElement('text');
+                var span2 = document.createElement('textPath');
+                span2.textContent = text;
+                span.append(span2);
+                path.append(span);
+            }
+        }, {
+            key: '_clickFn',
+            value: function _clickFn(e) {
+                var _this = this;
+
+                var curPath = Snap(e.target),
+                    index = curPath.data('index'),
+                    outerRadius = this.options.outerRadius;
+
+
+                this.rotateDegree += index * this.gap;
+
+                this.svg.select('.turnplate-g').animate({
+                    transform: 'rotate(' + this.rotateDegree + ',' + outerRadius + ' ' + outerRadius + ')'
+                }, 500, mina.easeinout).selectAll('path').forEach(function (path) {
+                    var pathIndex = path.data('index') - index;
+                    if (pathIndex < 0) {
+                        pathIndex += _this.counts;
+                    }
+                    path.data('index', pathIndex);
+                    path.removeClass('active');
+                });
+
+                curPath.addClass('active');
+            }
+        }]);
+
+        return Turnplate;
+    }();
+
+    Snap.turnplate = function (options) {
+        return new Turnplate(options);
+    };
+});
 
 }());

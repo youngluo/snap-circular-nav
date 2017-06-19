@@ -1,117 +1,4 @@
-function Turntable(id, radius, data, sectionCounts) {
-    if (!id) {
-        throw new Error('you must specify the id');
-    }
-
-    this.svg = S(id);
-    this.radius = radius || 50;
-
-    this.sectionCounts = sectionCounts || 4;
-    this.dataLen = data.length;
-    this.data = data;
-
-    this.rotateDegree = 0;
-    this.counts = this.dataLen * this.sectionCounts;
-
-    this.init();
-}
-
-var turntableFn = Turntable.prototype;
-
-turntableFn.init = function () {
-    this._drawOuterCircle();
-    this._drawSectors();
-    this._drawInnerCircle();
-}
-
-turntableFn._drawSectors = function () {
-    var self = this,
-        startAngle = 0,
-        endAngle = 360,
-        rad = Math.PI / 180,
-        shadow = self.svg.filter(S.filter.shadow(5, 0, 0)),
-        g = self.svg.g().attr({
-            id: 'sectors-g'
-        });
-
-    self.gap = (endAngle - startAngle) / self.counts;
-
-    for (var index = 0; index < self.counts; index++) {
-        var x1 = self.radius * (1 + Math.cos(-startAngle * rad)),
-            x2 = self.radius * (1 + Math.cos(-(startAngle + self.gap) * rad)),
-            y1 = self.radius * (1 + Math.sin(-startAngle * rad)),
-            y2 = self.radius * (1 + Math.sin(-(startAngle + self.gap) * rad));
-
-        var path = self.svg.path(["M", self.radius, self.radius, "L", x1, y1, "A", self.radius, self.radius, 0, 0, 0, x2, y2, "z"].join(' '))
-            .attr({
-                fill: "#1E1E1E",
-                stroke: '#000',
-                strokeWidth: 1
-            })
-            .data('index', index)
-            .click(self._clickFn.bind(self));
-
-        g.add(path);
-
-        startAngle += self.gap;
-    }
-}
-
-turntableFn._clickFn = function (e) {
-    var self = this,
-        curPath = S(e.target),
-        index = curPath.data('index');
-
-    self.rotateDegree += index * self.gap;
-
-    self.svg
-        .select('#sectors-g')
-        .animate({
-            transform: 'rotate(' + self.rotateDegree + ', ' + self.radius + ' ' + self.radius + ')'
-        }, 500, mina.easeinout)
-        .selectAll('path').forEach(function (path) {
-            var pathIndex = path.data('index') - index;
-
-            if (pathIndex < 0) {
-                pathIndex += self.counts;
-            }
-
-            path.data('index', pathIndex);
-
-            path.removeClass('active');
-        })
-
-    curPath.addClass('active');
-}
-
-turntableFn._drawInnerCircle = function () {
-    this.svg.circle(this.radius, this.radius, 80).attr({
-        fill: "#343434"
-    });
-}
-
-turntableFn._drawOuterCircle = function () {
-    this.svg.circle(this.radius, this.radius, this.radius + 5).attr({
-        fill: "#528387"
-    });
-}
-
-var data = [
-    {
-        text: 'demo1',
-        url: '#1'
-    },
-    {
-        text: 'demo2',
-        url: '#2'
-    },
-    {
-        text: 'demo3',
-        url: '#3'
-    }
-];
-
-new Turntable('#turnplate', 150, data);
+import './index.css';
 
 if (typeof Object.assign !== 'function') {
     Object.assign = target => {
@@ -138,18 +25,126 @@ Snap.plugin((Snap, Element, Paper, glob, Fragment) => {
     class Turnplate {
         constructor(options) {
             const defaultOptions = {
-                id: '',
-                radius: 50,
+                wrapperDom: '',
+                outerRadius: 150,
+                innerRadius: 0,
+                outerBackgroundColor: '#528387',
+                innerBackgroundColor: '#848888',
+                sectorsBackgroundColor: '#ccc',
+                sectorsBorderColor: '#000',
+                sectorsBorderWidth: 1,
                 section: 1
             };
+
             this.options = Object.assign({}, defaultOptions, options);
+            this._init();
+
+            return this;
+        }
+
+        _init() {
+            const { data, section, outerRadius, wrapperDom } = this.options;
+            this.svg = Snap(outerRadius * 2, outerRadius * 2)
+                .attr({ class: 'turnplate' });
+            if (wrapperDom) {
+                const svg = this.svg.node;
+                svg.parentNode.removeChild(svg);
+                document.querySelector(wrapperDom).appendChild(svg);
+            }
+            this.rotateDegree = 0;
+            this.counts = data.length * section;
+
+            this._drawOuterCircle();
+            this._drawSectors();
+            this._drawInnerCircle();
+        }
+
+        _drawOuterCircle() {
+            const { outerRadius, outerBackgroundColor } = this.options;
+            this.svg.circle(outerRadius, outerRadius, outerRadius).attr({
+                fill: outerBackgroundColor
+            });
+        }
+
+        _drawInnerCircle() {
+            const { outerRadius, innerRadius, innerBackgroundColor } = this.options;
+            if (!innerRadius) return;
+            this.svg.circle(outerRadius, outerRadius, innerRadius).attr({
+                fill: innerBackgroundColor
+            });
+        }
+
+        _drawSectors() {
+            let startAngle = 0;
+            const
+                endAngle = 360,
+                rad = Math.PI / 180,
+                { outerRadius, sectorsBackgroundColor, sectorsBorderColor, sectorsBorderWidth, data } = this.options,
+                g = this.svg.g().attr({
+                    class: 'turnplate-g'
+                });
+
+            this.gap = (endAngle - startAngle) / this.counts; // each of angle
+
+            for (let index = 0; index < this.counts; index++) {
+                const x1 = outerRadius * (1 + Math.cos(-startAngle * rad)),
+                    x2 = outerRadius * (1 + Math.cos(-(startAngle + this.gap) * rad)),
+                    y1 = outerRadius * (1 + Math.sin(-startAngle * rad)),
+                    y2 = outerRadius * (1 + Math.sin(-(startAngle + this.gap) * rad));
+
+                const path = this.svg.path(["M", outerRadius, outerRadius, "L", x1, y1, "A", outerRadius, outerRadius, 0, 0, 0, x2, y2, "z"].join(' '))
+                    .attr({
+                        fill: sectorsBackgroundColor,
+                        stroke: sectorsBorderColor,
+                        strokeWidth: sectorsBorderWidth
+                    })
+                    .data('index', index)
+                    .click(this._clickFn.bind(this));
+
+                this._setText(path, data[index].text);
+
+                g.add(path);
+                startAngle += this.gap;
+            }
+        }
+
+        _setText(path, text) {
+            const { x, x2, y, y2 } = path.getBBox();
+            const textX = x + (x2 - x) / 2;
+            const textY = y + (y2 - y) / 2;
+            const span = document.createElement('text');
+            const span2 = document.createElement('textPath');
+            span2.textContent = text;
+            span.append(span2);
+            path.append(span);
+        }
+
+        _clickFn(e) {
+            const curPath = Snap(e.target),
+                index = curPath.data('index'),
+                { outerRadius } = this.options;
+
+            this.rotateDegree += index * this.gap;
+
+            this.svg
+                .select('.turnplate-g')
+                .animate({
+                    transform: `rotate(${this.rotateDegree},${outerRadius} ${outerRadius})`
+                }, 500, mina.easeinout)
+                .selectAll('path').forEach(path => {
+                    let pathIndex = path.data('index') - index;
+                    if (pathIndex < 0) {
+                        pathIndex += this.counts;
+                    }
+                    path.data('index', pathIndex);
+                    path.removeClass('active');
+                })
+
+            curPath.addClass('active');
         }
     }
 
     Snap.turnplate = options => {
-        if (!options.id) {
-            throw new Error('must specify id');
-        }
         return new Turnplate(options);
     };
 });

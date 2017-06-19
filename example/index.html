@@ -3,14 +3,60 @@
 
 <head>
     <meta charset="UTF-8">
-    <script src="dist/snap.svg-min.js"></script>
-    <link rel="stylesheet" href="index.css">
     <title>Document</title>
+    <style>
+        #turnplate {
+            border: solid 1px #ccc;
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body>
-    <svg id="turnplate"></svg>
-    <script src="index.js"></script>
+    <div id="turnplate"></div>
+    <script src="../node_modules/snapsvg/dist/snap.svg-min.js"></script>
+    <script src="../dist/snap-turnplate.js"></script>
+    <script>
+        var data = [
+            {
+                text: 'one',
+                url: '#1'
+            },
+            {
+                text: 'two',
+                url: '#2'
+            },
+            {
+                text: 'three',
+                url: '#3'
+            },
+            {
+                text: 'four',
+                url: '#4'
+            },
+            {
+                text: 'five',
+                url: '#5'
+            },
+            {
+                text: 'six',
+                url: '#6'
+            },
+            {
+                text: 'five',
+                url: '#5'
+            },
+            {
+                text: 'six',
+                url: '#6'
+            }
+        ];
+        Snap.turnplate({
+            wrapperDom: '#turnplate',
+            data: data,
+
+        });
+    </script>
 </body>
 
 </html>
